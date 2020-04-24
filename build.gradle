@@ -1,0 +1,67 @@
+plugins {
+    id 'java'
+    id 'jacoco'
+    id 'checkstyle'
+}
+
+group = 'org.green'
+version = '0.1.0-SNAPSHOT'
+
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
+
+ext.checkstyleVersion = '8.31'
+ext.junitJupiterVersion = '5.6.2'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation "org.junit.jupiter:junit-jupiter-api:$junitJupiterVersion"
+    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junitJupiterVersion"
+}
+
+test {
+    useJUnitPlatform()
+    testLogging {
+        showStandardStreams true
+        exceptionFormat 'full'
+    }
+}
+
+jar {
+    archivesBaseName = rootProject.name
+    manifest {
+        attributes 'Implementation-Title': projectName,
+                'Implementation-Version': project.version,
+                'Implementation-Vendor': projectAuthor
+    }
+}
+
+javadoc {
+    title "<h1>$projectName</h1>"
+    options.bottom "<i>Copyright &#169; $projectYear $projectAuthor.</i>"
+    if (JavaVersion.current() >= JavaVersion.VERSION_1_10) {
+        options.addBooleanOption 'html5', true
+    }
+}
+
+checkstyle {
+    toolVersion checkstyleVersion
+    configFile file("$rootDir/config/checkstyle/checkstyle.xml")
+}
+
+jacocoTestReport {
+    reports {
+        xml.enabled true
+        html.enabled true
+    }
+}
+
+check.dependsOn jacocoTestReport
+
+wrapper {
+    gradleVersion '6.3'
+    distributionType 'ALL'
+}
