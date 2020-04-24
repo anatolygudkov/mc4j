@@ -1,12 +1,12 @@
 # mCounters for java
 Counters for midi- and microservices.
 
-##Motivation and goals
+## Motivation and goals
 TBD
 
-##Usage
+## Usage
 
-###How to publish counters
+### How to publish counters
 
 ```java
 final Properties statics = new Properties();
@@ -31,7 +31,7 @@ counterM.close();
 writer.close();
 ```
 
-###How to read counters
+### How to read counters
 
 ```java
 final MCountersReader reader = new MCountersReader("mycounters.dat");
