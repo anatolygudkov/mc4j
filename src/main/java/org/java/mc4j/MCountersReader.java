@@ -61,6 +61,10 @@ public final class MCountersReader implements AutoCloseable {
         return decoder.getPid();
     }
 
+    public long getStartTime() {
+        return decoder.getStartTime();
+    }
+
     public void forEachStatic(final StaticConsumer consumer) {
         decoder.forEachStatic(consumer);
     }

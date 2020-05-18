@@ -90,6 +90,7 @@ public final class MCountersWriter implements AutoCloseable {
         values = encoder.values;
 
         encoder.setPid(MCountersUtils.PID);
+        encoder.setStartTime(System.currentTimeMillis());
         encoder.setStatics(statics);
 
         encoder.setVersion(MCountersLayout.COUNTERS_VERSION); // HB write

@@ -35,6 +35,7 @@ import java.io.PrintStream;
  *     <li>name of the counters' file</li>
  *     <li>version of the counters' file</li>
  *     <li>PID</li>
+ *     <li>start time</li>
  *     <li>statics</li>
  *     <li>counters</li>
  * </ul>
@@ -51,18 +52,19 @@ public class MCountersPrinter {
 
         final PrintStream output = System.out;
 
-        output.println("file:" + countersFile.getAbsolutePath());
+        output.println("file: " + countersFile.getAbsolutePath());
 
         try (MCountersReader mCountersReader = new MCountersReader(countersFile)) {
 
-            output.println("version:" + mCountersReader.getVersion());
-            output.println("pid:" + mCountersReader.getPid());
+            output.println("version: " + mCountersReader.getVersion());
+            output.println("pid: " + mCountersReader.getPid());
+            output.println("started: " + mCountersReader.getStartTime());
 
             mCountersReader.forEachStatic((label, value) ->
-                    output.println("static:" + escapeEqual(label) + '=' + escapeEqual(value)));
+                    output.println("static: " + escapeEqual(label) + '=' + escapeEqual(value)));
 
             mCountersReader.forEachCounter((id, label, value) ->
-                    output.println("counter:" + escapeEqual(label) + '[' + id + ']' + '=' + value));
+                    output.println("counter: " + escapeEqual(label) + '[' + id + ']' + '=' + value));
 
         } catch (final FileNotFoundException e) {
             throw e; // TODO: refactor?

@@ -84,6 +84,10 @@ public class DirectMemoryBuffer {
         UNSAFE.putInt(null, addressOffset + index, value);
     }
 
+    public void putIntOrdered(final int index, final int value) {
+        UNSAFE.putOrderedInt(null, addressOffset + index, value);
+    }
+
     public void putIntVolatile(final int index, final int value) {
         UNSAFE.putIntVolatile(null, addressOffset + index, value);
     }

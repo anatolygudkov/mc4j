@@ -96,11 +96,15 @@ public final class MCountersEncoder extends MCountersLayout {
         header.putLongVolatile(HEADER_PID_OFFSET, pid);
     }
 
+    public void setStartTime(final long startTime) {
+        header.putLongVolatile(HEADER_START_TIME_OFFSET, startTime);
+    }
+
     public void setStatics(final Properties statics) {
         int offset = 0;
 
         if (statics == null || statics.isEmpty()) {
-            this.statics.putIntVolatile(offset, 0);
+            this.statics.putIntOrdered(offset, 0);
             return;
         }
 
@@ -111,9 +115,9 @@ public final class MCountersEncoder extends MCountersLayout {
         final List<String> labels = new ArrayList<>(statics.stringPropertyNames());
         Collections.sort(labels);
 
-        this.statics.putIntVolatile(offset, labels.size());
+        this.statics.putIntOrdered(offset, labels.size());
 
-        offset += STATICS_RECORDS_OFFSET;
+        offset = STATICS_RECORDS_OFFSET;
 
         for (final String label : labels) {
             final String value = statics.getProperty(label);
@@ -132,7 +136,7 @@ public final class MCountersEncoder extends MCountersLayout {
             this.statics.putBytes(offset + STATICS_LABEL_OFFSET + labelBytes.length, valueBytes);
 
             this.statics.putInt(offset + STATICS_LABEL_LENGTH_OFFSET, labelBytes.length);
-            this.statics.putIntVolatile(offset + STATICS_VALUE_LENGTH_OFFSET, valueBytes.length); // HB write
+            this.statics.putIntOrdered(offset + STATICS_VALUE_LENGTH_OFFSET, valueBytes.length); // HB write
 
             offset += recordLength;
         }
@@ -145,7 +149,7 @@ public final class MCountersEncoder extends MCountersLayout {
         while (metadataOffset < metadata.capacity()) {
             final int idStatusOffset = metadataOffset + METADATA_COUNTER_ID_STATUS_OFFSET;
 
-            final long idStatus = metadata.getLongVolatile(idStatusOffset); // HB Read
+            final long idStatus = metadata.getLongVolatile(idStatusOffset); // HB read
 
             final int status = extractStatus(idStatus);
 
@@ -168,7 +172,7 @@ public final class MCountersEncoder extends MCountersLayout {
 
                         final long allocatedIdStatus = makeIdStatus(id, COUNTER_STATUS_ALLOCATED);
 
-                        metadata.putLongVolatile(idStatusOffset, allocatedIdStatus); // HB Write
+                        metadata.putLongOrdered(idStatusOffset, allocatedIdStatus); // HB write
 
                         return valueOffset;
                     }
@@ -191,7 +195,7 @@ public final class MCountersEncoder extends MCountersLayout {
         while (metadataOffset < metadata.capacity()) {
             final int idStatusOffset = metadataOffset + METADATA_COUNTER_ID_STATUS_OFFSET;
 
-            final long idStatus = metadata.getLongVolatile(idStatusOffset); // HB Read
+            final long idStatus = metadata.getLongVolatile(idStatusOffset); // HB read
 
             final long currentId = extractId(idStatus);
 
@@ -201,7 +205,7 @@ public final class MCountersEncoder extends MCountersLayout {
                 switch (status) {
                     case COUNTER_STATUS_ALLOCATED:
                         final long newIdStatus = makeIdStatus(id, COUNTER_STATUS_FREED);
-                        metadata.compareAndSwapLong(idStatusOffset, idStatus, newIdStatus); // HB Write; we don't care
+                        metadata.compareAndSwapLong(idStatusOffset, idStatus, newIdStatus); // HB write; we don't care
                         // about result of CAS, since the counter may be freed by another thread already
                         // (a race condition) and this is good for us anyway
                         return true;

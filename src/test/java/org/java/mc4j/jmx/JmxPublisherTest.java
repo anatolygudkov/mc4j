@@ -4,7 +4,6 @@ import org.java.mc4j.MCountersReader;
 import org.java.mc4j.MCountersWriter;
 import org.junit.jupiter.api.Test;
 
-import javax.management.MBeanAttributeInfo;
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
 import java.io.File;
@@ -150,7 +149,6 @@ class JmxPublisherTest {
                 reader.forEachCounter((id, label, value) -> {
                     numberOfCounters.incrementAndGet();
                     sumValue.addAndGet(value);
-                    System.out.printf("[%d]%s=%d\n", id, label, value);
                 });
                 assertEquals(9, numberOfCounters.get());
                 assertEquals(9, sumValue.get());

@@ -59,12 +59,16 @@ public final class MCountersDecoder extends MCountersLayout {
         return header.getLongVolatile(HEADER_PID_OFFSET);
     }
 
+    public long getStartTime() {
+        return header.getLongVolatile(HEADER_START_TIME_OFFSET);
+    }
+
     public void forEachStatic(final StaticConsumer consumer) {
         int offset = STATICS_NUMBER_OF_STATICS_OFFSET;
 
-        final int numOfStatics = statics.getIntVolatile(offset); // HB
+        final int numOfStatics = statics.getIntVolatile(offset); // HB read
 
-        offset += STATICS_RECORDS_OFFSET;
+        offset = STATICS_RECORDS_OFFSET;
 
         for (int i = 0; i < numOfStatics; i++) {
             final int labelLength = statics.getInt(offset + STATICS_LABEL_LENGTH_OFFSET);
@@ -87,9 +91,9 @@ public final class MCountersDecoder extends MCountersLayout {
     public String getStaticValue(final String staticLabel) {
         int offset = STATICS_NUMBER_OF_STATICS_OFFSET;
 
-        final int numOfStatics = statics.getIntVolatile(offset); // HB
+        final int numOfStatics = statics.getIntVolatile(offset); // HB read
 
-        offset += STATICS_RECORDS_OFFSET;
+        offset = STATICS_RECORDS_OFFSET;
 
         final byte[] staticLabelBytes = staticLabel.getBytes(STRING_CHARSET);
 
@@ -122,7 +126,7 @@ public final class MCountersDecoder extends MCountersLayout {
         while (metadataOffset < metadata.capacity()) {
             final int idStatusOffset = metadataOffset + METADATA_COUNTER_ID_STATUS_OFFSET;
 
-            final long idStatus = metadata.getLongVolatile(idStatusOffset); // HB Read
+            final long idStatus = metadata.getLongVolatile(idStatusOffset); // HB read
 
             final int status = extractStatus(idStatus);
 
@@ -162,7 +166,7 @@ public final class MCountersDecoder extends MCountersLayout {
         while (metadataOffset < metadata.capacity()) {
             final int idStatusOffset = metadataOffset + METADATA_COUNTER_ID_STATUS_OFFSET;
 
-            final long idStatus = metadata.getLongVolatile(idStatusOffset); // HB Read
+            final long idStatus = metadata.getLongVolatile(idStatusOffset); // HB read
 
             final int status = extractStatus(idStatus);
 
@@ -201,7 +205,7 @@ public final class MCountersDecoder extends MCountersLayout {
         while (metadataOffset < metadata.capacity()) {
             final int idStatusOffset = metadataOffset + METADATA_COUNTER_ID_STATUS_OFFSET;
 
-            final long idStatus = metadata.getLongVolatile(idStatusOffset); // HB Read
+            final long idStatus = metadata.getLongVolatile(idStatusOffset); // HB read
 
             final int status = extractStatus(idStatus);
 

@@ -48,9 +48,7 @@ class MCountersEncoderDecoderTest {
         final int metadataLength = MCountersEncoder.metadataLength(0);
         final int valuesLength = MCountersEncoder.valuesLength(0);
 
-        assertEquals(
-                MCountersUtils.SIZE_OF_INT,
-                staticsLength);
+        assertEquals(MCountersUtils.SIZE_OF_INT, staticsLength);
         assertEquals(0, metadataLength);
         assertEquals(0, valuesLength);
 
@@ -78,6 +76,9 @@ class MCountersEncoderDecoderTest {
         final long pid = 123;
         encoder.setPid(pid);
 
+        final long startTime = 123456789;
+        encoder.setStartTime(startTime);
+
         final int version = 1;
         encoder.setVersion(version);
 
@@ -90,6 +91,7 @@ class MCountersEncoderDecoderTest {
 
         assertEquals(version, decoder.getVersion());
         assertEquals(pid, decoder.getPid());
+        assertEquals(startTime, decoder.getStartTime());
     }
 
     @Test
@@ -123,6 +125,9 @@ class MCountersEncoderDecoderTest {
         final long pid = 123;
         encoder.setPid(pid);
 
+        final long startTime = 123456789;
+        encoder.setStartTime(startTime);
+
         final int version = 1;
         encoder.setVersion(version);
 
@@ -138,6 +143,7 @@ class MCountersEncoderDecoderTest {
 
         assertEquals(version, decoder.getVersion());
         assertEquals(pid, decoder.getPid());
+        assertEquals(startTime, decoder.getStartTime());
 
         final AtomicInteger numOfStatics = new AtomicInteger();
         decoder.forEachStatic((lbl, val) -> {
