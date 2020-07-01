@@ -39,7 +39,6 @@ import java.io.PrintStream;
  *     <li>statics</li>
  *     <li>counters</li>
  * </ul>
- * <b>IMPORTANT:</b> Symbol {@code =} in labels and values of the statics and labels of counters is escaped.
  */
 public class MCountersPrinter {
 
@@ -61,27 +60,15 @@ public class MCountersPrinter {
             output.println("started: " + mCountersReader.getStartTime());
 
             mCountersReader.forEachStatic((label, value) ->
-                    output.println("static: " + escapeEqual(label) + '=' + escapeEqual(value)));
+                    output.printf("static: %s=%s\n", label, value));
 
             mCountersReader.forEachCounter((id, label, value) ->
-                    output.println("counter: " + escapeEqual(label) + '[' + id + ']' + '=' + value));
+                    output.printf("counter: %s[%d]=%d\n", label, id, value));
 
         } catch (final FileNotFoundException e) {
             throw e; // TODO: refactor?
         } catch (final Exception e) {
             throw e; // TODO: refactor?
         }
-    }
-
-    private static String escapeEqual(final String value) {
-        final StringBuilder result = new StringBuilder();
-        for (int i = 0; i < value.length(); i++) {
-            final char c = value.charAt(i);
-            if (c == '=' || c == '\\') {
-                result.append('\\');
-            }
-            result.append(c);
-        }
-        return result.toString();
     }
 }

@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package org.java.mc4j.rest;
+package org.java.mc4j.tools.rest;
 
 /**
  * TODO: This class is going to be a simple REST endpoint to provide counter values.

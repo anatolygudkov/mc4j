@@ -73,9 +73,9 @@ public interface MCounter extends AutoCloseable {
     void setWeak(long value);
 
     /**
-     * Increments the counter atomically and returns previous value.
+     * Increments the counter atomically and returns new value.
      *
-     * @return previous value of the counter
+     * @return new value of the counter
      */
     long increment();
 

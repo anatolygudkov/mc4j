@@ -178,7 +178,7 @@ public final class MCountersWriter implements AutoCloseable {
 
         @Override
         public long increment() {
-            return values.getAndAddLong(valueOffset, 1);
+            return values.getAndAddLong(valueOffset, 1) + 1;
         }
 
         @Override

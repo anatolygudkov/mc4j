@@ -74,8 +74,6 @@ public final class MCountersDecoder extends MCountersLayout {
             final int labelLength = statics.getInt(offset + STATICS_LABEL_LENGTH_OFFSET);
             final int valueLength = statics.getInt(offset + STATICS_VALUE_LENGTH_OFFSET);
 
-            final int recordLength = staticsRecordLength(labelLength, valueLength);
-
             final byte[] labelBytes = new byte[labelLength];
             statics.getBytes(offset + STATICS_LABEL_OFFSET, labelBytes);
 
@@ -83,6 +81,8 @@ public final class MCountersDecoder extends MCountersLayout {
             statics.getBytes(offset + STATICS_LABEL_OFFSET + labelBytes.length, valueBytes);
 
             consumer.accept(new String(labelBytes, STRING_CHARSET), new String(valueBytes, STRING_CHARSET));
+
+            final int recordLength = staticsRecordLength(labelLength, valueLength);
 
             offset += recordLength;
         }
@@ -218,7 +218,6 @@ public final class MCountersDecoder extends MCountersLayout {
             if (counterId == id) {
                 switch (status) {
                     case COUNTER_STATUS_ALLOCATED:
-
                         final int labelLength = metadata.getInt(metadataOffset + METADATA_LABEL_LENGTH_OFFSET);
 
                         final byte[] labelBytes = new byte[labelLength];

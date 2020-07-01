@@ -116,6 +116,10 @@ class MCountersWriterReaderTest {
                     assertTrue(counter.isClosed());
                 }
 
+                reader.forEachCounter((id, lbl, val) -> {
+                    fail("All counters must be closed");
+                });
+
             } catch (final IOException e) {
                 fail(e);
             }

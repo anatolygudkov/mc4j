@@ -139,7 +139,7 @@ public abstract class MCountersLayout {
     protected static final int HEADER_START_TIME_OFFSET = HEADER_PID_OFFSET + MCountersUtils.SIZE_OF_LONG;
 
     static final int HEADER_LENGTH =
-            MCountersUtils.align(HEADER_VALUES_LENGTH_OFFSET + MCountersUtils.SIZE_OF_LONG,
+            MCountersUtils.align(HEADER_START_TIME_OFFSET + MCountersUtils.SIZE_OF_LONG,
                     MCountersUtils.SIZE_OF_CACHE_LINE * 2);
 
     protected static final int STATICS_NUMBER_OF_STATICS_OFFSET = 0;

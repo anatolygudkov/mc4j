@@ -156,7 +156,6 @@ public final class MCountersEncoder extends MCountersLayout {
             switch (status) {
                 case COUNTER_STATUS_NOT_USED:
                 case COUNTER_STATUS_FREED:
-
                     final long inProgressIdStatus = makeIdStatus(id, COUNTER_STATUS_ALLOCATION_IN_PROGRESS);
 
                     if (metadata.compareAndSwapLong(idStatusOffset, idStatus, inProgressIdStatus)) {
