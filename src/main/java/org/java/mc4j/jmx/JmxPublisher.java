@@ -63,7 +63,7 @@ import java.util.Map;
  * <pre>
  * try (JmxPublisher jmxPublisher = ...) {
  *
- *     jmxPublisher.addMbeans("java.lang:type=Runtime[StartTime, Uptime] java.lang:type=OperatingSystem[*]");
+ *     jmxPublisher.addMBeans("java.lang:type=Runtime[StartTime, Uptime] java.lang:type=OperatingSystem[*]");
  *
  *     jmxPublisher.refresh();
  *     ...

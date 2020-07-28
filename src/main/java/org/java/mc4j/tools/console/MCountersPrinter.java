@@ -24,9 +24,10 @@
 package org.java.mc4j.tools.console;
 
 import org.java.mc4j.MCountersReader;
+import org.java.mc4j.cli.Application;
+import org.java.mc4j.cli.Options;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.PrintStream;
 
 /**
@@ -40,14 +41,25 @@ import java.io.PrintStream;
  *     <li>counters</li>
  * </ul>
  */
-public class MCountersPrinter {
+public class MCountersPrinter extends Application {
+    private final Options.Argumented file;
 
-    public static void main(final String[] args) throws Exception {
-        if (args.length != 1) {
-            throw new IllegalArgumentException("Counter's file must be specified");
-        }
+    public MCountersPrinter(final String[] args) {
+        super("mcprinter", args);
 
-        final File countersFile = new File(args[0]);
+        withDescription("Prints all info from a counters' file.");
+        withUsage("-f /var/mcounters.dat",
+                "Parses and prints out the content of the 'mcounters.dat' file.");
+
+        file = withArgumented("file", 'f', "FILE")
+                .required()
+                .withDescription("Path to a counters' file to be parsed.")
+                .withRequiredArgument();
+    }
+
+    @Override
+    protected void doWork() throws Throwable {
+        final File countersFile = file.existingFileValue();
 
         final PrintStream output = System.out;
 
@@ -60,15 +72,14 @@ public class MCountersPrinter {
             output.println("started: " + mCountersReader.getStartTime());
 
             mCountersReader.forEachStatic((label, value) ->
-                    output.printf("static: %s=%s\n", label, value));
+                    output.printf("static: %s=%s%n", label, value));
 
             mCountersReader.forEachCounter((id, label, value) ->
-                    output.printf("counter: %s[%d]=%d\n", label, id, value));
-
-        } catch (final FileNotFoundException e) {
-            throw e; // TODO: refactor?
-        } catch (final Exception e) {
-            throw e; // TODO: refactor?
+                    output.printf("counter: %s[%d]=%d%n", label, id, value));
         }
+    }
+
+    public static void main(final String[] args) {
+        new MCountersPrinter(args).start();
     }
 }

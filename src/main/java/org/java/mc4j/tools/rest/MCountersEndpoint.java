@@ -24,11 +24,10 @@
 package org.java.mc4j.tools.rest;
 
 /**
- * TODO: This class is going to be a simple REST endpoint to provide counter values.
+ * TODO: This class is going to be a simple REST endpoint to provide counters' values.
  */
 public class MCountersEndpoint {
-
     public static void main(final String[] args) {
+        throw new UnsupportedOperationException("Not implemented yet");
     }
-
 }
