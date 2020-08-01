@@ -77,7 +77,7 @@ public class Options {
         }
 
         @SuppressWarnings("unchecked")
-        public T required() { // TODO: naming
+        public T require() {
             this.required = true;
             return (T) this;
         }
@@ -112,28 +112,25 @@ public class Options {
     public class Argumented extends Option<Argumented> {
         private final String argumentName;
         private String defaultArgumentValue;
-        private boolean argumentRequired;
 
         Argumented(final String name, final char shortName, final String argumentName) {
             super(name, shortName);
             this.argumentName = argumentName;
         }
 
-        public boolean argumentRequired() {
-            return argumentRequired;
+        @Override
+        public Argumented require() {
+            super.require();
+            defaultArgumentValue = null;
+            return this;
         }
 
         public String defaultArgumentValue() {
             return defaultArgumentValue;
         }
 
-        public Argumented withRequiredArgument() {
-            argumentRequired = true;
-            return this;
-        }
-
-        public Argumented withRequiredArgument(final String defaultArgumentValue) {
-            withRequiredArgument();
+        public Argumented withDefaultArgumentValue(final String defaultArgumentValue) {
+            required = false;
             this.defaultArgumentValue = defaultArgumentValue;
             return this;
         }
@@ -157,7 +154,8 @@ public class Options {
 
         public String stringValue() {
             checkParsed();
-            return arguments.get(this);
+            final String result = arguments.get(this);
+            return result != null ? result : defaultArgumentValue;
         }
 
         public int intValue() {
@@ -240,7 +238,7 @@ public class Options {
         int currentIndex = 0;
 
         int state = PARAM_EXPECTED_STATE;
-        Option<?> currentOption = null;
+        Argumented currentOptionToArgument = null;
 
         _loop:
         while (currentIndex < args.length) {
@@ -270,14 +268,14 @@ public class Options {
                                         currentIndex++;
                                         break _loop;
                                     }
-                                    currentOption = parseLong(s);
-                                    if (currentOption != null) {
+                                    currentOptionToArgument = parseLong(s);
+                                    if (currentOptionToArgument != null) {
                                         state = ARGUMENT_EXPECTED_STATE;
                                     }
                                     break;
                                 default:
-                                    currentOption = parseShort(s);
-                                    if (currentOption != null) {
+                                    currentOptionToArgument = parseShort(s);
+                                    if (currentOptionToArgument != null) {
                                         state = ARGUMENT_EXPECTED_STATE;
                                     }
                                     break;
@@ -298,9 +296,9 @@ public class Options {
                             break;
                         }
                         case ARGUMENT_EXPECTED_STATE:
-                            arguments.put(currentOption, s);
+                            arguments.put(currentOptionToArgument, s);
                             state = PARAM_EXPECTED_STATE;
-                            currentOption = null;
+                            currentOptionToArgument = null;
                             break;
                         default:
                             throw new IllegalStateException();
@@ -312,7 +310,8 @@ public class Options {
         }
 
         if (state == ARGUMENT_EXPECTED_STATE) {
-            throw new IllegalArgumentException("No required argument found for the option " + currentOption.longName());
+            throw new IllegalArgumentException("No required argument found for the option " +
+                    currentOptionToArgument.longName());
         }
 
         // validate required options
@@ -323,15 +322,6 @@ public class Options {
 
         if (!missedRequires.isEmpty()) {
             throw new IllegalArgumentException("Required option(s) missed: " + missedRequires);
-        }
-
-        for (final Option<?> option : allOptions) {
-            if (!option.required) {
-                continue;
-            }
-            if (!arguments.containsKey(option)) {
-                throw new IllegalArgumentException("Required option missed: " + option);
-            }
         }
 
         // collect the rest of parameters
@@ -359,7 +349,7 @@ public class Options {
         return option;
     }
 
-    private Option parseShort(final String s) {
+    private Argumented parseShort(final String s) {
         final StringBuilder argument = new StringBuilder();
         Argumented argumented = null;
 
@@ -397,14 +387,10 @@ public class Options {
             return null;
         }
 
-        if (argumented.argumentRequired) {
-            return argumented;
-        }
-
         return null;
     }
 
-    private Option parseLong(final String s) {
+    private Argumented parseLong(final String s) {
         final StringBuilder name = new StringBuilder();
         StringBuilder argument = null;
 
@@ -450,7 +436,7 @@ public class Options {
             return null;
         }
 
-        return option;
+        return (Argumented) option;
     }
 
     private static boolean isLetterOrDigit(final String s) {

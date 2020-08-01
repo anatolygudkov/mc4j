@@ -52,9 +52,8 @@ public class MCountersPrinter extends Application {
                 "Parses and prints out the content of the 'mcounters.dat' file.");
 
         file = withArgumented("file", 'f', "FILE")
-                .required()
-                .withDescription("Path to a counters' file to be parsed.")
-                .withRequiredArgument();
+                .require()
+                .withDescription("Path to a counters' file to be parsed.");
     }
 
     @Override
