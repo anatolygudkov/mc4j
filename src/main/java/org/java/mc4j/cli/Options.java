@@ -29,7 +29,6 @@ import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 public class Options {
     public abstract class Option<T extends Option> {
@@ -218,8 +217,24 @@ public class Options {
         return !allOptions.isEmpty();
     }
 
+    public Flag withFlag(final String longName) {
+        return withFlag(longName, (char) 0);
+    }
+
+    public Flag withFlag(final char shortName) {
+        return withFlag(null, shortName);
+    }
+
     public Flag withFlag(final String longName, final char shortName) {
         return registerOption(new Flag(longName, shortName));
+    }
+
+    public Argumented withArgumented(final String longName, final String argumentName) {
+        return withArgumented(longName, (char) 0, argumentName);
+    }
+
+    public Argumented withArgumented(final char shortName, final String argumentName) {
+        return withArgumented(null, shortName, argumentName);
     }
 
     public Argumented withArgumented(final String longName, final char shortName, final String argumentName) {
@@ -297,8 +312,8 @@ public class Options {
                         }
                         case ARGUMENT_EXPECTED_STATE:
                             arguments.put(currentOptionToArgument, s);
-                            state = PARAM_EXPECTED_STATE;
                             currentOptionToArgument = null;
+                            state = PARAM_EXPECTED_STATE;
                             break;
                         default:
                             throw new IllegalStateException();
@@ -315,13 +330,14 @@ public class Options {
         }
 
         // validate required options
-        final String missedRequires = allOptions.stream()
+        final String[] missedRequires = allOptions.stream()
                 .filter(o -> o.required && !arguments.containsKey(o))
-                .map(o -> "'" + o.descriptiveName() + "'")
-                .collect(Collectors.joining(", "));
+                .map(o -> "'" + o.descriptiveName() + "'").toArray(String[]::new);
 
-        if (!missedRequires.isEmpty()) {
-            throw new IllegalArgumentException("Required option(s) missed: " + missedRequires);
+        if (missedRequires.length > 0) {
+            throw new IllegalArgumentException("Required option" +
+                    (missedRequires.length > 1 ? "s": "") +
+                    " missed: " + String.join(", ", missedRequires));
         }
 
         // collect the rest of parameters
@@ -366,9 +382,10 @@ public class Options {
                 throw new IllegalArgumentException("Unknown option '" + c + "' in '" + s + "'");
             }
 
+            argumented = null;
+
             if (nextOption instanceof Argumented) {
                 argumented = (Argumented) nextOption;
-                continue;
             }
 
             if (arguments.containsKey(nextOption)) {
@@ -387,7 +404,7 @@ public class Options {
             return null;
         }
 
-        return null;
+        return argumented;
     }
 
     private Argumented parseLong(final String s) {
