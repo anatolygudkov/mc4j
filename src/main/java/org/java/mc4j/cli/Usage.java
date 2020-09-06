@@ -88,7 +88,16 @@ public class Usage {
 
         if (options.hasOptions()) {
             final List<DescriptedItem> options = Arrays.stream(this.options.options())
-                    .map(option -> new DescriptedItem(option.descriptiveName(), option.description()))
+                    .map(option -> {
+                        String description = option.description();
+                        if (option instanceof Options.Argumented) {
+                            final Options.Argumented argOption = (Options.Argumented) option;
+                            if (argOption.defaultArgumentValue() != null) {
+                                description = description + " Default: " + argOption.defaultArgumentValue();
+                            }
+                        }
+                        return new DescriptedItem(option.descriptiveName(), description);
+                    })
                     .collect(Collectors.toList());
             new DescriptiveTable("Options:", options)
                     .write(to, OPTIONS_COLUMNS_WIDTH_FACTOR);
@@ -231,7 +240,7 @@ public class Usage {
             this.endIndex = -1;
         }
 
-        public String[] toArray() {
+        String[] toArray() {
             final List<String> result = new ArrayList<>();
             while (next() != null) {
                 result.add(this.toString());
@@ -242,7 +251,7 @@ public class Usage {
         private static final int NOT_WS_STATE = 0;
         private static final int WS_STATE = 1;
 
-        public CharSequence next() {
+        CharSequence next() {
             if (endIndex + 1 == text.length()) {
                 return null;
             }

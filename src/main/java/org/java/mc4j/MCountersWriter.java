@@ -209,7 +209,6 @@ public final class MCountersWriter implements AutoCloseable {
                 }
                 closed = true;
             }
-            encoder.freeCounter(id);
         }
     }
 }

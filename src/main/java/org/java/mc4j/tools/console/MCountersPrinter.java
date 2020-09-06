@@ -48,7 +48,7 @@ public class MCountersPrinter extends Application {
         super("mcprinter", args);
 
         withDescription("Prints all info from a counters' file.");
-        withUsage("-f /var/mcounters.dat",
+        withUsage("-f /dev/shm/mcounters.dat",
                 "Parses and prints out the content of the 'mcounters.dat' file.");
 
         file = withArgumented("file", 'f', "FILE")

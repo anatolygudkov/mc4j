@@ -37,10 +37,10 @@ public abstract class Application {
     private final Options options = new Options();
     private final Usage usage;
 
-    private final Options.Flag help;
-    private final Options.Flag question;
-
     private final String[] args;
+
+    private Options.Flag help;
+    private Options.Flag question;
 
     protected Application(final String name, final String[] args) {
         this(name,
@@ -49,17 +49,32 @@ public abstract class Application {
     }
 
     protected Application(final String name, final String command, final String[] args) {
-        help = options.withFlag("help", 'h').withDescription("This help.");
-        question = options.withFlag(null, '?').withDescription(help.description());
-
         usage = new Usage(name, command, options);
 
         this.args = args;
     }
 
+    public final Options.Flag withFlag(final String longName) {
+        return options.withFlag(longName);
+    }
+
+    public final Options.Flag withFlag(final char shortName) {
+        return options.withFlag(shortName);
+    }
+
     public final Options.Flag withFlag(final String longName,
                                        final char shortName) {
         return options.withFlag(longName, shortName);
+    }
+
+    public final Options.Argumented withArgumented(final String longName,
+                                                   final String argumentName) {
+        return options.withArgumented(longName, argumentName);
+    }
+
+    public final Options.Argumented withArgumented(final char shortName,
+                                                   final String argumentName) {
+        return options.withArgumented(shortName, argumentName);
     }
 
     public final Options.Argumented withArgumented(final String longName,
@@ -82,9 +97,20 @@ public abstract class Application {
     }
 
     protected final void start() {
+        if (help == null) {
+            help = options.withFlag("help", 'h').withDescription("This help.");
+        }
+        if (question == null) {
+            question = options.withFlag(null, '?').withDescription(help.description());
+        }
+
         try {
             options.parse(args);
         } catch (final Throwable t) {
+            if (help.isSet() || question.isSet()) {
+                doHelp(System.out);
+                return;
+            }
             System.err.println(t.getLocalizedMessage() + Usage.NL);
             doHelp(System.err);
             System.exit(1);
