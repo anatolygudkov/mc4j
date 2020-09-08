@@ -53,6 +53,7 @@ try (MCountersReader reader = new MCountersReader("mycounters.dat")) {
 ## Concurrency issues
 - Counters are thread safe and one counter can be modified in different goroutines.
 - After a counter is closed, it must be not used, since its memory slot can be occupied by a new counter and the value of that new counter will be modified unexpectedtly.
-- Counters must not be modified after the writer is closed, because such modification leads to a segmentation fault.
+- Counters must not be accessed after the writer is closed, because such modification leads to a segmentation fault.
+
 ## License
 The code is available under the terms of the [MIT License](http://opensource.org/licenses/MIT).
